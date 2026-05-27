@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { loginToHub, openProduct } from '../../utils/nitroberry';
+import { getVaultPrivateKey } from '../../utils/vaultSecrets';
 
 test.describe('Vault product flow', () => {
   test.beforeEach(async ({ page }) => {
@@ -20,5 +21,14 @@ test.describe('Vault product flow', () => {
     await expect(privateKey).toHaveAttribute('type', 'password');
     await page.getByLabel('Show private key').click();
     await expect(privateKey).toHaveAttribute('type', 'text');
+  });
+
+  test('unlocks vault with saved local private key', async ({ page }) => {
+    await page.getByPlaceholder('Paste your generated private key here').fill(getVaultPrivateKey());
+    await page.getByRole('button', { name: 'Access Vault' }).click();
+
+    await expect(page.getByText('Vault unlocked', { exact: true })).toBeVisible();
+    await expect(page.getByText('TOTAL CREDENTIALS')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Create Credential' })).toBeVisible();
   });
 });

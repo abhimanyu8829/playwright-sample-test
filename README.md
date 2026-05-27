@@ -17,7 +17,7 @@ The old test suite was built for an older Nitroberry flow. The current suite has
 Playwright currently discovers:
 
 ```bash
-30 tests in 12 files
+31 tests in 12 files
 ```
 
 The suite is split into three Playwright projects:
@@ -93,6 +93,7 @@ Coverage:
 
 - Validates access without private key.
 - Verifies private-key show/hide toggle.
+- Unlocks Vault with a saved local private key fixture.
 
 ### Messenger Flow
 
@@ -228,7 +229,7 @@ npx playwright install
 npx playwright test --list
 ```
 
-Expected output should show `30 tests in 12 files`.
+Expected output should show `31 tests in 12 files`.
 
 ## Credentials
 
@@ -273,6 +274,24 @@ playwright/.auth/admin.json
 Product and hub tests reuse this storage state so every test does not need to repeat the login flow.
 
 The auth state folder is ignored by Git because it can contain active session data.
+
+## Vault Test Key
+
+Vault unlock tests can use either an environment variable or a local ignored fixture.
+
+Environment variable:
+
+```bash
+NITROBERRY_VAULT_PRIVATE_KEY=<your-private-key>
+```
+
+Local fixture path:
+
+```bash
+playwright/.vault/admin-vault.json
+```
+
+This folder is ignored by Git because it contains sensitive Vault test data.
 
 ## Run Commands
 

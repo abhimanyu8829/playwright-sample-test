@@ -9,7 +9,9 @@ test.describe('Shared Nitroberry shell controls', () => {
   test('opens the notifications popover from the product shell', async ({ page }) => {
     await page.getByRole('button', { name: 'Notifications' }).click();
 
-    await expect(page.getByRole('dialog').or(page.getByText(/notifications/i).first())).toBeVisible();
+    const notificationDialog = page.getByRole('dialog');
+    await expect(notificationDialog).toBeVisible();
+    await expect(notificationDialog.getByText('Notifications', { exact: true })).toBeVisible();
   });
 
   test('opens the product switcher menu from a product app', async ({ page }) => {

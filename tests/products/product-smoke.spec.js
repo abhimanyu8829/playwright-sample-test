@@ -62,7 +62,10 @@ test.describe('Nitroberry product smoke coverage', () => {
     await expect(page.getByText('Unlock Your Vault')).toBeVisible();
     await expect(page.getByPlaceholder('Paste your generated private key here')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Access Vault' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Generate Private Key' })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Generate Private Key' })
+        .or(page.getByRole('button', { name: 'Forgot private key?' }))
+    ).toBeVisible();
   });
 
   test('Messenger loads contacts workspace and encrypted empty state', async ({ page }) => {

@@ -15,7 +15,7 @@ test.describe('Task dashboard controls', () => {
   });
 
   test('opens dashboard view mode selector', async ({ page }) => {
-    await page.getByRole('button', { name: /View: Calendar/i }).click();
+    await page.getByRole('combobox').filter({ hasText: /View:\s*Calendar/i }).click();
 
     await expect(page.getByRole('option').first()).toBeVisible();
   });

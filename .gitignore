@@ -1,5 +1,6 @@
 node_modules/
 playwright/.auth/
+playwright/.vault/
 playwright-report/
 blob-report/
 test-results/
