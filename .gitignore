@@ -1,4 +1,8 @@
 node_modules/
+playwright/.auth/
+playwright-report/
+blob-report/
+test-results/
 last-run.json
 auth.json
 debug.png

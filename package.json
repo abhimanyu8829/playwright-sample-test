@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "playwright test",
-    "test:headed": "playwright test --headed"
+    "test:headed": "playwright test --headed",
+    "test:auth": "playwright test tests/auth tests/hub",
+    "test:products": "playwright test tests/products",
+    "test:new": "playwright test tests/products/shell-controls.spec.js tests/products/cockpit-dashboard.spec.js tests/products/task-dashboard-controls.spec.js tests/products/workflow-dashboard-controls.spec.js tests/products/social-dashboard-controls.spec.js --project=chromium --no-deps"
   },
   "keywords": [],
   "author": "",

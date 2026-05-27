@@ -1,102 +1,428 @@
-# Nitroberry Platform Automation
+# Nitroberry Playwright Test Suite
 
-This project is a comprehensive test suite for automating and validating core business processes in the **Nitroberry** platform using the **Playwright** framework. It covers authentication, user management, and system setup configurations to ensure platform stability and reliability.
+This repository contains end-to-end Playwright tests for the current Nitroberry platform:
 
-## 🚀 Getting Started
+- Main app and product hub: `https://app.nitroberry.com`
+- Cockpit: `https://cockpit.nitroberry.com`
+- Task: `https://task.nitroberry.com`
+- Workflow: `https://workflow.nitroberry.com`
+- Social: `https://social.nitroberry.com`
+- Vault: `https://vault.nitroberry.com`
+- Messenger: `https://messenger.nitroberry.com`
 
-Follow these instructions to set up the project locally and run the tests.
+The old test suite was built for an older Nitroberry flow. The current suite has been updated for the new product hub flow where users log in to `/hub` and then access separate Nitroberry product apps.
 
-### 📋 Prerequisites
+## Test Count
 
-Before you begin, ensure you have the following installed on your machine:
+Playwright currently discovers:
 
-- **Node.js**: [Download and install Node.js](https://nodejs.org/) (Version 14 or higher recommended).
-- **npm**: Usually comes bundled with Node.js.
-
-### 🛠️ Installation & Setup
-
-1. **Clone the Repository**
-   ```bash
-   git clone <repository-url>
-   cd "Nitroberry-Playwright-Test"
-   ```
-
-2. **Install Dependencies**
-   Install the required Node.js modules:
-   ```bash
-   npm install
-   ```
-
-3. **Install Playwright Browsers**
-   Playwright requires specific browser binaries (Chromium, Firefox, WebKit):
-   ```bash
-   npx playwright install
-   ```
-
-## 🧪 Running the Tests
-
-You can execute the entire suite or specific tests using the following commands.
-
-### Run All Tests (Headless)
-Runs all tests in the background (no browser window):
 ```bash
-npx playwright test
+30 tests in 12 files
 ```
 
-### Run All Tests (Headed)
-Opens the browser so you can watch the automation:
+The suite is split into three Playwright projects:
+
+- `setup`: creates authenticated storage state for product tests.
+- `auth`: runs login and validation tests with a clean browser state.
+- `chromium`: runs hub and product tests using the saved authenticated state.
+
+## What Is Covered
+
+### Auth
+
+File:
+
+- `tests/auth/auth.spec.js`
+
+Coverage:
+
+- Login required field validation.
+- Invalid credential handling.
+- Successful admin login.
+- Redirect/landing check for the new `/hub` flow.
+
+### Hub
+
+File:
+
+- `tests/hub/hub.spec.js`
+
+Coverage:
+
+- Product catalogue loads after login.
+- Licensed product cards are visible.
+- Survey is disabled/unavailable.
+- CRM is shown as coming soon/not licensed.
+- Compact catalogue view toggle works.
+
+### Product Smoke Tests
+
+File:
+
+- `tests/products/product-smoke.spec.js`
+
+Coverage:
+
+- Cockpit dashboard loads and shows company administration modules.
+- Task dashboard loads and shows delegation/calendar/create-task controls.
+- Workflow dashboard loads and shows metrics and workflow board.
+- Social home feed loads with community/post controls.
+- Vault loads private-key unlock screen.
+- Messenger loads contacts workspace and encrypted empty state.
+
+### Task Flow
+
+File:
+
+- `tests/products/task-flow.spec.js`
+
+Coverage:
+
+- Opens the current Create Task dialog.
+- Verifies current required fields.
+- Fills task title, description, and end date.
+- Cancels instead of submitting, so production data is not created.
+
+### Vault Flow
+
+File:
+
+- `tests/products/vault-flow.spec.js`
+
+Coverage:
+
+- Validates access without private key.
+- Verifies private-key show/hide toggle.
+
+### Messenger Flow
+
+File:
+
+- `tests/products/messenger-flow.spec.js`
+
+Coverage:
+
+- Contact search input.
+- All/unread filter controls.
+- Workspace empty state.
+
+### Shared Shell Controls
+
+File:
+
+- `tests/products/shell-controls.spec.js`
+
+Coverage:
+
+- Notifications button.
+- Product switcher.
+- Theme toggle.
+
+### Cockpit Dashboard Basics
+
+File:
+
+- `tests/products/cockpit-dashboard.spec.js`
+
+Coverage:
+
+- Main Cockpit sidebar modules.
+- Dashboard overview sections such as users, organization structure, holidays, shifts, locations, tickets, and storage.
+
+### Task Dashboard Controls
+
+File:
+
+- `tests/products/task-dashboard-controls.spec.js`
+
+Coverage:
+
+- Delegations/My Task switching.
+- Dashboard view mode selector.
+
+### Workflow Dashboard Controls
+
+File:
+
+- `tests/products/workflow-dashboard-controls.spec.js`
+
+Coverage:
+
+- My Dashboard/Company Dashboard controls.
+- Workflow filters panel.
+- Metrics remain visible.
+
+### Social Dashboard Controls
+
+File:
+
+- `tests/products/social-dashboard-controls.spec.js`
+
+Coverage:
+
+- Home navigation.
+- Communities/favorites context.
+- Post type controls: Discussion, Question, Praise, Poll, Drafts.
+
+## Verified Status
+
+The following groups were run successfully against the live Nitroberry app:
+
 ```bash
-npx playwright test --headed
+npx playwright test tests/auth --reporter=line
+npx playwright test tests/hub --reporter=line
+npx playwright test tests/products --reporter=line
 ```
 
-### Run a Specific Test File
-Example: Run the user creation test:
+Verified result:
+
 ```bash
-npx playwright test tests/user/user-create-positive.spec.js
+Auth: 4 passed
+Hub: 4 passed
+Products: 13 passed
 ```
 
-### Generate and View Test Report
-After running tests, view a detailed interactive report:
+Additional basic control tests were added after that. They are discovered by Playwright, but live verification was blocked during the last run because Nitroberry product subdomains timed out from the local environment.
+
+## Prerequisites
+
+Install these before running the tests:
+
+- Node.js 18 or newer
+- npm
+- Git
+- Internet access to Nitroberry app and product subdomains
+
+Check your versions:
+
+```bash
+node --version
+npm --version
+git --version
+```
+
+## Setup On A New System
+
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd Nitroberry-Playwright-Test
+```
+
+2. Install project dependencies:
+
+```bash
+npm install
+```
+
+3. Install Playwright browsers:
+
+```bash
+npx playwright install
+```
+
+4. Confirm tests are detected:
+
+```bash
+npx playwright test --list
+```
+
+Expected output should show `30 tests in 12 files`.
+
+## Credentials
+
+The suite currently defaults to:
+
+```bash
+admin@nitroberry.com
+123456
+```
+
+You can override credentials with environment variables.
+
+PowerShell:
+
+```powershell
+$env:NITROBERRY_EMAIL="admin@nitroberry.com"
+$env:NITROBERRY_PASSWORD="123456"
+```
+
+Command Prompt:
+
+```bat
+set NITROBERRY_EMAIL=admin@nitroberry.com
+set NITROBERRY_PASSWORD=123456
+```
+
+Bash:
+
+```bash
+export NITROBERRY_EMAIL="admin@nitroberry.com"
+export NITROBERRY_PASSWORD="123456"
+```
+
+## How Authentication Works
+
+`tests/auth.setup.js` logs in once and saves browser session state to:
+
+```bash
+playwright/.auth/admin.json
+```
+
+Product and hub tests reuse this storage state so every test does not need to repeat the login flow.
+
+The auth state folder is ignored by Git because it can contain active session data.
+
+## Run Commands
+
+Run everything:
+
+```bash
+npm test
+```
+
+Run headed mode:
+
+```bash
+npm run test:headed
+```
+
+Run auth and hub tests:
+
+```bash
+npm run test:auth
+```
+
+Run all product tests:
+
+```bash
+npm run test:products
+```
+
+Run only the newest added product-control tests:
+
+```bash
+npm run test:new
+```
+
+Run one file:
+
+```bash
+npx playwright test tests/products/task-flow.spec.js
+```
+
+Run one test by title:
+
+```bash
+npx playwright test -g "opens the create task dialog"
+```
+
+Run without re-running setup, using existing auth state:
+
+```bash
+npx playwright test tests/products/task-flow.spec.js --project=chromium --no-deps
+```
+
+## Reports And Debugging
+
+Open the HTML report:
+
 ```bash
 npx playwright show-report
 ```
 
-## 📂 Test Suite Structure
+Run with browser visible:
 
-The test suite is organized into logical directories covering different areas of the application:
+```bash
+npx playwright test --headed
+```
 
-### 🔐 Auth Tests
-- **`tests/auth/login-positive.spec.js`**: Validates successful login with correct credentials and verifies dashboard access.
-- **`tests/auth/login-negative.spec.js`**: Ensures the system correctly handles invalid credentials and prevents unauthorized access.
-- **`tests/auth/login-validation.spec.js`**: Tests form input validations, such as empty fields and missing passwords.
-- **`tests/auth/logout.spec.js`**: Validates the full logout flow, including confirmation modals and redirection to the login page.
+Run with Playwright UI mode:
 
-### 👤 User Tests
-- **`tests/user/user-create-positive.spec.js`**: Validates the successful creation of new users with role and location assignments.
-- **`tests/user/user-create-negative.spec.js`**: Ensures the system correctly handles errors and mandatory field validations during user creation.
-- **`tests/user/user-validation.spec.js`**: Tests form-level validations for user management.
+```bash
+npx playwright test --ui
+```
 
-### ⚙️ Setup Tests
-- **`tests/setup/company-settings.spec.js`**: Validates updating company profile details and website settings.
-- **`tests/setup/company-location.spec.js`**: Tests the addition of new company physical locations/offices.
-- **`tests/setup/department-create.spec.js`**: Ensures new departments can be added and correctly displayed in the system.
-- **`tests/setup/job-title-create.spec.js`**: Validates the creation and verification of new job titles using API response monitoring.
-- **`tests/setup/holiday-create.spec.js`**: Tests the addition and validation of company holidays with backend-compatible date handling.
-- **`tests/setup/create-role.spec.js`**: Validates the creation of user roles with specific permissions and access levels.
-- **`tests/setup/create-shift.spec.js`**: Tests the creation and management of employee shifts, including timing and rotation.
-- **`tests/setup/create-ticket.spec.js`**: Ensures support or operational tickets can be created, assigned, and tracked.
-- **`tests/setup/group-create.spec.js`**: Validates the creation of user groups for organizational management and bulk assignments.
-- **`tests/setup/workflow-template-create.spec.js`**: Tests the setup of automated workflow templates for business processes.
+Show trace for a failed test:
 
-### 📋 Task Tests
-- **`tests/task/create-task.spec.js`**: Validates the full task creation lifecycle, including title, description, priority, end dates, and user assignment.
+```bash
+npx playwright show-trace <path-to-trace.zip>
+```
 
+Failed screenshots, videos, traces, and error contexts are saved under:
 
+```bash
+test-results/
+```
 
-## 🛠️ Built With
+## Project Structure
 
-* [Playwright](https://playwright.dev/) - Reliable end-to-end testing for modern web apps.
-* [Node.js](https://nodejs.org/) - JavaScript runtime.
+```text
+.
+├── playwright.config.js
+├── package.json
+├── README.md
+├── tests
+│   ├── auth.setup.js
+│   ├── auth
+│   │   └── auth.spec.js
+│   ├── hub
+│   │   └── hub.spec.js
+│   └── products
+│       ├── cockpit-dashboard.spec.js
+│       ├── messenger-flow.spec.js
+│       ├── product-smoke.spec.js
+│       ├── shell-controls.spec.js
+│       ├── social-dashboard-controls.spec.js
+│       ├── task-dashboard-controls.spec.js
+│       ├── task-flow.spec.js
+│       ├── vault-flow.spec.js
+│       └── workflow-dashboard-controls.spec.js
+└── utils
+    └── nitroberry.js
+```
 
----
-*Developed for automated testing excellence.*
+## Important Notes
+
+- Tests use the current Nitroberry product architecture.
+- Tests avoid destructive production changes by default.
+- Task creation coverage fills the modal and cancels instead of submitting.
+- Vault tests do not require a real private key.
+- Survey is currently disabled in the hub.
+- CRM is currently coming soon/not licensed.
+
+## Still Left For Future Coverage
+
+These deeper flows are not fully automated yet:
+
+- Cockpit create/edit/delete flows for users, departments, job titles, groups, roles, facilities, shifts, holidays, and support tickets.
+- Vault credential CRUD after private-key unlock.
+- Social post creation and community management.
+- Workflow template, indent, report, and analytics deep flows.
+- Messenger real chat send/receive flow.
+- Survey product flows, once licensed/enabled.
+- CRM product flows, once available.
+
+## Troubleshooting
+
+If product tests fail at `page.goto` with `ERR_CONNECTION_TIMED_OUT`, the Nitroberry host or your local network is not reachable. Retry a smaller group first:
+
+```bash
+npm run test:auth
+npx playwright test tests/products/product-smoke.spec.js --project=chromium --no-deps
+```
+
+If auth state is expired, delete the saved auth state and run again:
+
+```bash
+Remove-Item -Recurse -Force playwright/.auth
+npm test
+```
+
+For Bash:
+
+```bash
+rm -rf playwright/.auth
+npm test
+```
