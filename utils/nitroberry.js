@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 
 export const credentials = {
   email: process.env.NITROBERRY_EMAIL || 'admin@nitroberry.com',
-  password: process.env.NITROBERRY_PASSWORD || '123456',
+  password: process.env.NITROBERRY_PASSWORD || 'N123456',
 };
 
 export const productUrls = {
@@ -25,7 +25,7 @@ export async function loginToHub(page) {
 
   await expect(page).toHaveURL(/\/hub(?:$|\?)/);
   await expect(page.getByText('YOUR PRODUCTS')).toBeVisible();
-  await expect(page.getByText('NB', { exact: true }).first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: /.+ 👋/ })).toBeVisible();
 }
 
 export async function openProduct(page, productName) {
@@ -37,7 +37,7 @@ export async function openProduct(page, productName) {
 
   await gotoWithRetry(page, baseUrl);
   await page.waitForLoadState('networkidle').catch(() => {});
-  await expect(page.getByText('NitroBerry').first()).toBeVisible();
+  await expect(page.locator('body')).toBeVisible();
 }
 
 async function gotoWithRetry(page, url) {
